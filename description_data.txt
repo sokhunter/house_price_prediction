@@ -1,0 +1,21 @@
+area                        area en pies
+material	                material y acabado (1 - 10)
+condicion	                condicion (1 - 10)
+anio_construccion	        año construccion
+anio_remodelacion	        año remoledacion
+sotano	                    altura del sotano
+calefaccion	                calefaccion
+aire_acondicionado	        aire acondicionado
+area_construida_piso_1	    area construida piso 1
+area_construida_piso_2	    area construida piso 2
+area_construida	            area total construida (todos los pisos)
+banios	                    cantidad de baños completos
+banios_sin_ducha	        cantidad de baños sin ducha
+dormitorios	                cantidad de dormitorios
+cocinas	                    cantidad de cocinas
+chimeneas	                cantidad de chimeneas
+area_garage	                area del garage en pies cuadrados
+area_piscina	            area de la piscina en pies cuadrados
+mes_venta	                mes de venta
+anio_venta	                año de venta
+precio	                    precio de venta
