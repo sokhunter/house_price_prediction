@@ -62,7 +62,6 @@ class Normalizer():
 
 class TimeSeriesDataset(Dataset):
 	def __init__(self, x, y):
-		x = np.expand_dims(x, 2)
 		self.x = x.astype(np.float32)
 		self.y = y.astype(np.float32)
 		

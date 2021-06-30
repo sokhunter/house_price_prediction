@@ -10,7 +10,8 @@ class Model(nn.Module):
 		# Definicion de capas
 		# nn.Linear(tamaño del input, cantidad de neuronas)
 		self.Linear_1 = nn.Linear(config_model['input_size'], config_model['hidden_layer_size'])
-		self.LSTM = nn.LSTM(input_size=config_model['hidden_layer_size'], hidden_size=config_model['hidden_layer_size'], num_layers=config_model['num_layers'], batch_first=True)
+		self.Hidden_Layer_1 = nn.Linear(config_model['hidden_layer_size'], config_model['num_layers']*config_model['hidden_layer_size'])
+		self.Hidden_Layer_2 = nn.Linear(config_model['num_layers']*config_model['hidden_layer_size'], config_model['num_layers']*config_model['hidden_layer_size'])
 		self.Linear_2 = nn.Linear(config_model['num_layers']*config_model['hidden_layer_size'], config_model['output_size'])
 
 		# Definicion de funcion de activacion
@@ -24,17 +25,7 @@ class Model(nn.Module):
 		# Tecnica para que la taza de aprendizaje decaiga a medida que aprende el modelo
 		self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=config_training['scheduler_step_size'], gamma=0.1)
 
-		self.init_weights()
 		self.to(config_training['device'])
-    
-	def init_weights(self):
-		for name, param in self.LSTM.named_parameters():
-			if 'bias' in name:
-				nn.init.constant_(param, 0.0)
-			elif 'weight_ih' in name:
-				nn.init.kaiming_normal_(param)
-			elif 'weight_hh' in name:
-				nn.init.orthogonal_(param)
 
 	def forward(self, x):
 		batchsize = x.shape[0]
@@ -43,18 +34,16 @@ class Model(nn.Module):
 		# -> ReLu(WX + b) = ouput
 		out = self.ReLU(self.Linear_1(x))
 
-		# Segunda capa
-		# Para la Capa LSTM no aplicaremos función de activación, pero si dropout
-		# El output de la "Capa Lineal 1" será nuestra entrada para la "Capa LSTM"
-		# -> LSTM(x) = WX + b = ouput
-		# -> Dropout(output) = output con olvido
-		lstm_out, (h_t, c_t) = self.LSTM(out)
-		# reshape output from hidden cell into [batch, features] for `linear_2`
-		out = h_t.permute(1, 0, 2).reshape(batchsize, -1)
+		# Segunda capa (PRIMERA CAPA OCULTA)
+		out = self.ReLU(self.Hidden_Layer_1(out))
 
-		# Tercera capa
+		# Tercera capa (SEGUNDA CAPA OCULTA)
+		out = self.ReLU(self.Hidden_Layer_2(out))
+
+		# Cuarta capa
 		# Para nuestra última capa "Capa Lineal 2" mantendremos el output sin cambios
 		predictions = self.Linear_2(out)
+
 		return predictions[:,-1]
 	
 	def run_epoch(self, dataloader, is_training=False):
