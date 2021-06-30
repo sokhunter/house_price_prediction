@@ -1,20 +1,27 @@
 import torch.nn as nn
 import torch.optim as optim
 
-class NNModel(nn.Module):
+class Model(nn.Module):
 	def __init__(self, config_model, config_training):
 		super().__init__()
-		self.hidden_layer_size = config_model['hidden_layer_size']
+		# self.hidden_layer_size = config_model['hidden_layer_size']
 		self.device=config_training['device']
-
+		
+		# Definicion de capas
+		# nn.Linear(tamaño del input, cantidad de neuronas)
 		self.Linear_1 = nn.Linear(config_model['input_size'], config_model['hidden_layer_size'])
-		self.ReLU = nn.ReLU()
 		self.LSTM = nn.LSTM(input_size=config_model['hidden_layer_size'], hidden_size=config_model['hidden_layer_size'], num_layers=config_model['num_layers'], batch_first=True)
-		self.dropout = nn.Dropout(config_model['dropout'])
 		self.Linear_2 = nn.Linear(config_model['num_layers']*config_model['hidden_layer_size'], config_model['output_size'])
 
+		# Definicion de funcion de activacion
+		self.ReLU = nn.ReLU()
+		# Tecnica para evitar overfitting
+		self.dropout = nn.Dropout(config_model['dropout'])
+		# Funcion de costo
 		self.coste = nn.MSELoss()
+		# Funcion de obtimizacion
 		self.optimizer = optim.Adam(self.parameters(), lr=config_training['learning_rate'], betas=(0.9, 0.98), eps=1e-9)
+		# Tecnica para que la taza de aprendizaje decaiga a medida que aprende el modelo
 		self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=config_training['scheduler_step_size'], gamma=0.1)
 
 		self.init_weights()

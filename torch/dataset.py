@@ -55,8 +55,8 @@ class Normalizer():
 	# __scaler.inverse_transform: solicita un vector de registros
 	# -> donde cada registro tiene 21 características (vector de tamaño 21)
 	# -> cada caracteristica es un valor de cada columna de nuestro dataset
-	def inverse_transform(normalized_price):
-		register = [0 for i in range(20)]
+	def inverse_transform(normalized_price, size = 21):
+		register = [0 for i in range(size - 1)]
 		register.append(normalized_price)
 		return int(round(__scaler.inverse_transform([register])[0][-1]))
 
