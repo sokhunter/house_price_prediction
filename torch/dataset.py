@@ -14,7 +14,7 @@ def get_data(dataset):
 def clean_data(data):
 	pd.options.mode.chained_assignment = None
 	attributes = [
-		('sotano', ['Gd', 'TA', 'Fa', 'Ex', 'Na']),
+		('sotano', ['Ex', 'Gd', 'TA', 'Fa', 'Na']),
 		('calefaccion', ['Floor', 'GasA', 'GasW', 'Wall', 'OthW', 'Grav']),
 		('aire_acondicionado', ['N', 'Y'])
 	]
@@ -53,9 +53,9 @@ class Normalizer():
 
 	# Obtener el Precio
 	# __scaler.inverse_transform: solicita un vector de registros
-	# -> donde cada registro tiene 21 características (vector de tamaño 21)
+	# -> donde cada registro tiene 16 características (vector de tamaño 16)
 	# -> cada caracteristica es un valor de cada columna de nuestro dataset
-	def inverse_transform(normalized_price, size = 21):
+	def inverse_transform(normalized_price, size = 16):
 		register = [0 for i in range(size - 1)]
 		register.append(normalized_price)
 		return int(round(__scaler.inverse_transform([register])[0][-1]))

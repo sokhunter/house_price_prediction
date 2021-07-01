@@ -13,7 +13,7 @@
         "color_pred_future": "#FF4136"
     },
     "model": {
-        "input_size": 20,
+        "input_size": 16,
         "output_size": 1,
         "num_layers": 2,
         "hidden_layer_size": 32,
