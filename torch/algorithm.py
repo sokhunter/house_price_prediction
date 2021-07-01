@@ -10,9 +10,9 @@ class Model(nn.Module):
 		# Definicion de capas
 		# nn.Linear(tamaño del input, cantidad de neuronas)
 		self.Linear_1 = nn.Linear(config_model['input_size'], config_model['hidden_layer_size'])
-		self.Hidden_Layer_1 = nn.Linear(config_model['hidden_layer_size'], config_model['num_layers']*config_model['hidden_layer_size'])
-		self.Hidden_Layer_2 = nn.Linear(config_model['num_layers']*config_model['hidden_layer_size'], config_model['num_layers']*config_model['hidden_layer_size'])
-		self.Linear_2 = nn.Linear(config_model['num_layers']*config_model['hidden_layer_size'], config_model['output_size'])
+		self.Hidden_Layer_1 = nn.Linear(config_model['hidden_layer_size'], config_model['hidden_layer_size'])
+		self.Hidden_Layer_2 = nn.Linear(config_model['hidden_layer_size'], config_model['hidden_layer_size'])
+		self.Linear_2 = nn.Linear(config_model['hidden_layer_size'], config_model['output_size'])
 
 		# Definicion de funcion de activacion
 		self.ReLU = nn.ReLU()

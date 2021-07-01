@@ -73,13 +73,26 @@ class Predictus():
         print('\nPorfavor espere mientras calculamos el valor de su próximo hogar.\nEste proceso puede tomar unos minutos')
         print('Calculando...')
     
+    def normalize(self):
+        Dataset = dataset.download_dataset(self.CONFIG['data']['filename'])
+        # Se carga las features a predecir
+        newData = np.array([[self.area, self.material, self.condicion, self.anio_construccion, self.anio_remodelacion, self.sotano, self.calefaccion, self.aire_acondicionado, self.area_piso_1, self.area_construida, self.banios_con_ducha, self.banios_sin_ducha, self.dormitorios, self.chimeneas, self.area_garage, self.area_piscina, 0]])
+        newData = pd.DataFrame(newData, columns=['area', 'material', 'condicion', 'anio_construccion', 'anio_remodelacion', 'sotano', 'calefaccion',  'aire_acondicionado', 'area_construida_piso_1', 'area_construida', 'banios', 'banios_sin_ducha', 'dormitorios', 'chimeneas', 'area_garage', 'area_piscina', 'precio'])
+        Dataset.append(newData, ignore_index=True)
+        # Obtener la data limpia
+        data = dataset.get_data(Dataset)
+        return dataset.Normalizer.transform(data)
+
     def load_data(self):
         # Dataset
-        Dataset = dataset.download_dataset(self.CONFIG['data']['filename'])
-        data = dataset.get_data(Dataset)
-        normalize_data = dataset.Normalizer.transform(data)
+        # Dataset = dataset.download_dataset(self.CONFIG['data']['filename'])
+        # data = dataset.get_data(Dataset)
+        # normalize_data = dataset.Normalizer.transform(data)
+        normalize_data = self.normalize()
+        # Eliminar ultimo las features a predecir
+        normalize_data = normalize_data[:-1]
+        # Dividir features y resultado
         data_x, data_y = dataset.split_data_x_y(normalize_data)
-
         # Divicion data train y data test
         data_x_train, data_x_test = dataset.split_data_train_test(data_x, self.CONFIG["data"]["train_split_size"])
         data_y_train, data_y_test = dataset.split_data_train_test(data_y, self.CONFIG["data"]["train_split_size"])
@@ -116,12 +129,10 @@ class Predictus():
 
     def prediccion(self):
         # Prediccion
-        data = np.array([[self.area, self.material, self.condicion, self.anio_construccion, self.anio_remodelacion, self.sotano, self.calefaccion, self.aire_acondicionado, self.area_piso_1, self.area_construida, self.banios_con_ducha, self.banios_sin_ducha, self.dormitorios, self.chimeneas, self.area_garage, self.area_piscina, 0]])
-        data = pd.DataFrame(data, columns=['area', 'material', 'condicion', 'anio_construccion', 'anio_remodelacion', 'sotano', 'calefaccion',  'aire_acondicionado', 'area_construida_piso_1', 'area_construida', 'banios', 'banios_sin_ducha', 'dormitorios', 'chimeneas', 'area_garage', 'area_piscina', 'precio'])
-        data = dataset.get_data(data)
-        print(data)
-        data = dataset.Normalizer.transform(data)
-        features, _ = dataset.split_data_x_y(data)
+        normalize_data = self.normalize()
+        # Eliminar ultimo las features a predecir
+        normalize_data = np.array([normalize_data[-1]])
+        features, _ = dataset.split_data_x_y(normalize_data)
         x = torch.tensor(features).float().to(self.CONFIG["training"]["device"])
         out = self.model(x)
         out_vector = out.detach().numpy()
@@ -131,7 +142,7 @@ class Predictus():
 
 
 form = Predictus()
-# form.ask()
+form.ask()
 form.load_data()
 form.model()
 form.train()
